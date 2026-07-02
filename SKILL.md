@@ -1,0 +1,52 @@
+---
+name: alibaba-java-development-guide
+description: 《阿里巴巴Java开发手册（黄山版）》总纲与路由入口。涵盖编程规约、异常日志、单元测试、安全规约、MySQL数据库、工程结构、设计规约七大维度。Use when writing, reviewing, or designing Java code; handling exceptions/logging; writing SQL or designing tables; writing unit tests; designing project architecture; or whenever Alibaba Java standards apply. 本 skill 为目录路由，详细规约按需查阅 data/ 下对应章节文件。
+---
+
+# 阿里巴巴Java开发手册（黄山版）— 总纲与路由
+
+## 手册定位
+
+**码出高效，码出质量。**
+
+本 skill 是《Java开发手册（黄山版）》（v1.7.1，2022.02.03 发布）的**总纲入口**。手册以 Java 开发者为中心视角，划分为七个维度。本 SKILL.md 只做**导航路由**，不内联全部条文——详细规约按需从 `data/` 目录取对应章节阅读，避免一次性载入全部内容。
+
+## 规约分级
+
+手册每条规约依据约束力强弱及故障敏感性分为三类，查阅 data 文件时以此判断优先级：
+
+| 级别 | 含义 | 处理原则 |
+|------|------|----------|
+| **【强制】** | 必须严格遵守 | 违反可能导致严重问题或线上故障，review 时必查 |
+| **【推荐】** | 建议遵循 | 有助于提升代码质量，无特殊情况应遵循 |
+| **【参考】** | 参考性建议 | 可根据实际团队情况选择，灵活应用 |
+
+每条规约通常包含：**说明**（扩展解释）、**正例**（提倡写法）、**反例**（雷区与真实故障案例）。
+
+## 章节路由表（按需查阅 data/）
+
+当任务命中下列场景时，**先定位对应章节文件，再用 Read 工具读取**该文件的相关小节，依据条文给出结论或修改建议。不要一次性读取全部 data 文件。
+
+| 场景关键词 | 章节 | data 文件 |
+|------------|------|-----------|
+| 命名风格、常量定义、代码格式、OOP、日期时间、集合处理、并发处理、控制语句、注释规约、前后端规约 | 一、编程规约 | `data/01-coding-standards.md` |
+| 错误码体系、异常捕获与抛出、try-catch-finally、NPE 防护、日志框架/级别/输出 | 二、异常日志 | `data/02-exception-logging.md` |
+| AIR 原则、测试独立性、覆盖率目标、BCDE、Mock、测试目录 | 三、单元测试 | `data/03-unit-testing.md` |
+| 权限校验、敏感数据脱敏、SQL 注入、XSS、CSRF、参数校验、文件上传、防重放 | 四、安全规约 | `data/04-security-standards.md` |
+| 建表、字段类型、主键/索引命名、组合索引、分页、count/sum、ORM、resultMap | 五、MySQL 数据库 | `data/05-mysql-database.md` |
+| 应用分层（Web/Service/Manager/DAO）、DO/DTO/BO/VO/Query、二方库依赖、GAV、服务器与 JVM | 六、工程结构 | `data/06-project-structure.md` |
+| 存储方案评审、用例图/状态图/时序图/类图/活动图、弱依赖与降级、SOLID/DRY、系统设计 | 七、设计规约 | `data/07-design-standards.md` |
+| 版本历史、专有名词解释（POJO/DO/DTO/NPE/AQS/GAV 等）、错误码全量列表 | 附录 | `data/08-appendix.md` |
+
+## 使用方式
+
+1. **识别任务主题**：根据用户问题（写 Java 代码、review、设计表、写 SQL、异常处理、测试等）匹配上表场景关键词。
+2. **按需读取**：只 Read 命中的 `data/*.md` 文件，定位到对应小节（如「(一) 命名风格」「(六) 集合处理」）。
+3. **对照条文**：引用规约编号与级别（【强制】/【推荐】/【参考】），给出正例或指出反例风险。
+4. **跨章节场景**：如「写一个 Service 方法并设计表」，分别读 `01`、`02`、`05`、`06`，不要凭记忆作答。
+
+## 注意事项
+
+- 内容源自 PDF 转换，少量排版噪声可能残留，引用时以条文语义为准。
+- 团队已有规范优先于本手册；本手册用于无团队约定或需参考业界实践的场景。
+- 版本：黄山版 1.7.1（2022.02.03），共 7 大维度、附 3 张表（版本历史、专有名词、错误码列表）。
