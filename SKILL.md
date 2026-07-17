@@ -51,6 +51,61 @@ description: 《阿里巴巴Java开发手册（黄山版）》总纲与路由入
 | 存储方案评审、用例图/状态图/时序图/类图/活动图、弱依赖与降级、SOLID/DRY、系统设计 | 七、设计规约 | `data/07-design-standards.md` |
 | 版本历史、专有名词解释（POJO/DO/DTO/NPE/AQS/GAV 等）、错误码全量列表 | 附录 | `data/08-appendix.md` |
 
+## 触发词映射表
+
+当用户输入包含以下关键词时，**优先查表定位**对应章节，无需依赖推理路由：
+
+| 触发词 / 关键词 | 命中章节 |
+|:---|:---|
+| JWT、OAuth2、Token、权限注解、@PreAuthorize、认证、授权、登录态 | `04-security-standards.md`（及补充章节） |
+| 数据脱敏、加密、加解密、敏感数据、个人信息 | `04-security-standards.md` |
+| 防重放、重放攻击、时间戳、nonce、签名校验 | `04-security-standards.md` |
+| 分布式事务、Seata、TCC、Saga、最终一致性 | `07-design-standards.md` + 参考微服务专项 |
+| 服务降级、熔断、Sentinel、Hystrix、@SentinelResource | `07-design-standards.md` |
+| Testcontainers、@SpringBootTest、集成测试、@DynamicPropertySource | `03-unit-testing.md` |
+| Mockito、@Mock、@InjectMocks、单元测试覆盖率、AIR | `03-unit-testing.md` |
+| 金额、BigDecimal、精度、舍入、setScale | `01-coding-standards.md`(集合/类型) + `05-mysql-database.md` |
+| 分页、PageHelper、COUNT 性能、深分页 | `05-mysql-database.md` |
+| 索引、联合索引、最左前缀、索引下推、覆盖索引 | `05-mysql-database.md` |
+| 线程池、ThreadPoolExecutor、异步、@Async、CompletableFuture | `01-coding-standards.md`(并发) |
+| 锁、synchronized、ReentrantLock、分布式锁、Redisson | `01-coding-standards.md`(并发) |
+| 日期、时间、LocalDateTime、Date、SimpleDateFormat、时区 | `01-coding-standards.md`(日期时间) |
+| 异常、NPE、空指针、try-catch、全局异常处理、@ControllerAdvice | `02-exception-logging.md` |
+| 日志、Logback、log4j2、@Slf4j、日志级别、日志规范 | `02-exception-logging.md` |
+| 分层、Controller、Service、Manager、DAO、DDD、充血模型 | `06-project-structure.md` |
+| DO、DTO、VO、BO、POJO、实体转换、MapStruct | `06-project-structure.md` |
+| 二方库、GAV、依赖冲突、maven、gradle、pom | `06-project-structure.md` |
+
+## 按使用场景推荐阅读
+
+根据当前任务类型，只读取对应视角的章节，提高效率：
+
+| 任务类型 | 推荐阅读 | 侧重视角 |
+|:---|:---|:---|
+| 🖊️ **编写新代码** | `01`（编程规约）+ `02`（异常日志） | **编写视角**：命名、格式、集合、并发、异常处理等即时决策类规约 |
+| 🔍 **审查存量代码** | `04`（安全）+ `05`（数据库）+ `06`（工程结构）+ `07`（设计） | **审查视角**：安全漏洞、事务边界、架构分层、设计合理性等全局判断类规约 |
+| 🧪 **补充单元测试** | `03`（单元测试） | **测试视角**：AIR/BCDE 原则、Mock、覆盖率、测试隔离 |
+| ⚙️ **设计表结构 / 写 SQL** | `05`（MySQL 数据库）+ `07`（设计规约-存储方案） | **数据视角**：建表规范、索引、SQL 性能、ORM |
+| 🏗️ **系统架构 / 模块设计** | `07`（设计规约）+ `06`（工程结构） | **架构视角**：分层、依赖、降级、图文档 |
+| 🐛 **排查问题 / 分析日志** | `02`（异常日志）+ `04`（安全） | **排查视角**：日志规范、异常处理、安全审计 |
+
+## 规约冲突处理
+
+当同一条代码同时命中多条规约且它们给出的方向不一致时，按以下优先级裁决：
+
+1. **安全优先**【最高】：安全规约优先级高于其他所有规约。涉及数据泄露、越权、注入风险时，其他规约可合理豁免
+2. **强制优先**：【强制】> 【推荐】> 【参考】。强制规约覆盖推荐规约
+3. **业务合理豁免**：如确因业务场景需要违背某条规约，**必须在代码中添加注释说明理由**，格式建议：`// Alibaba-Java: 豁免原因——<具体理由>`
+4. **渐进式改进**：重构存量代码时，「保持行为不变」优先于「一次性对齐所有规约」，可规划分阶段完成
+
+### 常见冲突示例
+
+| 冲突场景 | 裁决 |
+|:---|:---|
+| 【强制】方法不超 80 行 vs 【推荐】单一职责 | 优先满足单一职责。若拆出的小方法导致类膨胀，是合理的——加注释说明即可 |
+| 【强制】禁止魔法数字 vs 性能敏感场景需硬编码 | 加具名常量（`private static final int MAX_RETRY = 3`）而非直接写字面量，两全其美 |
+| 【强制】禁止 null 返回 vs 远程调用超时可返回 null | 建议改抛自定义业务异常或返回 Optional，避免调用方 NPE |
+
 ## 使用方式
 
 1. **识别任务主题**：根据用户问题（写 Java 代码、review、设计表、写 SQL、异常处理、测试等）匹配上表场景关键词。
