@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: '要发布的 tag（需已存在）'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 解析目标 tag
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "name=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 打包核心 skill 文件 zip
+        run: |
+          ZIP_NAME="alibaba-java-development-guide-${{ steps.tag.outputs.name }}.zip"
+          # 仅打包 skill 本体：SKILL.md、data/、project/、README.md、memory.md
+          zip -r "$ZIP_NAME" SKILL.md README.md memory.md data project
+          echo "---产物---"
+          ls -lh "$ZIP_NAME"
+          echo "---包内文件清单---"
+          unzip -l "$ZIP_NAME"
+
+      - name: 创建 Release 并上传 zip
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ steps.tag.outputs.name }}" \
+            "alibaba-java-development-guide-${{ steps.tag.outputs.name }}.zip" \
+            --title "Release ${{ steps.tag.outputs.name }}" \
+            --generate-notes \
+            --verify-tag
