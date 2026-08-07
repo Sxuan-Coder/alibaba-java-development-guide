@@ -5,7 +5,7 @@
 `码出高效，码出质量。`
 
 ---
-![version](https://img.shields.io/badge/version-1.1.0-blue) ![license](https://img.shields.io/badge/license-MIT-green) ![Alibaba](https://img.shields.io/badge/Alibaba-黄山版-orange)
+![version](https://img.shields.io/badge/version-1.1.1-blue) ![license](https://img.shields.io/badge/license-MIT-green) ![Alibaba](https://img.shields.io/badge/Alibaba-黄山版-orange)
 ---
 
 ## 一、为什么需要这个 Skill
