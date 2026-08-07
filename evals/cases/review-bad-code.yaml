@@ -1,0 +1,52 @@
+id: review-bad-code
+title: Review 代码时应识别反例并引用阿里规约条文
+description: |
+  验证 Skill 的「路由导航 + 条文引用」能力：
+  给 AI 一段含多处反例的 Java 代码，期望 AI 识别问题、指出违反的【强制】/【推荐】级别，
+  并给出正例。覆盖 Skill 是否被正确激活用于 review 场景。
+input:
+  prompt: |
+    请 review 下面这段 Java 代码，指出所有不符合《阿里巴巴 Java 开发手册》的地方，
+    按【强制】/【推荐】/【参考】分级，并给出正例。
+
+    ```java
+    public class UserService {
+        private Map<String, User> cache = new HashMap<>();
+        public User getUser(String id) {
+            if (id == null) return null;
+            User u = cache.get(id);
+            if (u == null) {
+                u = queryFromDb(id);
+                cache.put(id, u);
+            }
+            return u;
+        }
+        public String formatDate(Date d) {
+            return new SimpleDateFormat("yyyy-MM-dd").format(d);
+        }
+        public boolean check(String a, String b) {
+            return a == b;
+        }
+    }
+    ```
+expect:
+  must_contain:
+    - "强制"
+judge:
+  type: rule_based
+  success:
+    # 必须识别出至少 3 个问题（出现对应的规约关键词）
+    - output_contains:
+        all: ["强制"]
+    # 必须指出 HashMap 并发问题或 ConcurrentHashMap 建议
+    - output_contains:
+        any: ["ConcurrentHashMap", "HashMap 并发", "线程安全", "并发", "非线程安全"]
+    # 必须指出 SimpleDateFormat 问题或建议 DateTimeFormatter
+    - output_contains:
+        any: ["SimpleDateFormat", "DateTimeFormatter", "线程安全", "线程不安全"]
+    # 必须指出 == 比较字符串问题或建议 equals
+    - output_contains:
+        any: ["equals", "== 比较字符串", "字符串比较", "引用比较", "比较字符串"]
+    # 不应出现 "代码没问题" / "没有问题" 这类
+    - output_contains:
+        not: ["代码没有问题", "代码没问题", "符合规范", "符合阿里"]

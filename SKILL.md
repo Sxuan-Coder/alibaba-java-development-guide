@@ -106,6 +106,30 @@ description: 《阿里巴巴Java开发手册（黄山版）》总纲与路由入
 | 【强制】禁止魔法数字 vs 性能敏感场景需硬编码 | 加具名常量（`private static final int MAX_RETRY = 3`）而非直接写字面量，两全其美 |
 | 【强制】禁止 null 返回 vs 远程调用超时可返回 null | 建议改抛自定义业务异常或返回 Optional，避免调用方 NPE |
 
+## 规约推荐 API 速查（生成 Java 代码时强制使用）
+
+> **本节为代码生成的「主动应用」清单。** 当你在写或修改 Java 代码时，**不要等用户问、不要凭默认习惯**——下列场景命中时，必须直接采用规约推荐的 API/写法，并在注释中标注「阿里规约」以示区分。这是本 Skill 与模型默认行为拉开差距的关键。
+
+| 场景 | ❌ 禁止（反例） | ✅ 强制使用（正例） | 对应章节 |
+|:---|:---|:---|:---|
+| **日期/时间** | `new Date()`、`new SimpleDateFormat()`、`Calendar` | `LocalDateTime` / `LocalDate` / `Instant` + `DateTimeFormatter`（static final 复用） | 01-(九)日期时间 |
+| **入参校验** | `if (id == null) throw new RuntimeException(...)` 手写 | `Objects.requireNonNull(id, "id 不能为空")` 或 `StringUtils.isBlank(id)`（依赖 Spring 时用 `Assert.hasText`） | 02-(二)NPE 防护 |
+| **返回空集合** | `return null;` 或 `return Collections.emptyList()` 仅在只读场景 | `return Collections.emptyList();` / `List.of()` / `new ArrayList<>()`（需可变时）——**禁止返回 null** | 01-(六)集合处理 |
+| **金额计算** | `double` / `float`、`==` 比浮点 | `BigDecimal`（用 `String` 构造器）+ `compareTo` 比大小 | 01-(六)集合处理 + 05-MySQL |
+| **并发 Map/List** | `new HashMap<>()`、`new ArrayList<>()` 用于多线程 | `ConcurrentHashMap<>()` / `CopyOnWriteArrayList<>` / `Collections.synchronizedXxx` | 01-(七)并发处理 |
+| **字符串比较** | `==`、`!=` | `.equals()`、`Objects.equals()`；忽略大小写用 `equalsIgnoreCase` | 01-(一)命名风格 |
+| **线程创建** | `new Thread()` 裸建 | `ThreadPoolExecutor`（显式命名线程池）或 `CompletableFuture.supplyAsync` | 01-(七)并发处理 |
+| **ORM 字段映射** | `${}` 拼接 SQL、字符串拼接查询条件 | `#{}` 参数化 / `PreparedStatement` / `setParameter` | 05-(八)ORM |
+| **异常处理** | `catch (Exception e) { }` 吞异常、`e.printStackTrace()` | 捕获具体类型 + 记日志（`log.error("xx 失败", e)`）+ 抛自定义业务异常 | 02-(三)try-catch |
+| **布尔命名** | `boolean flag`、`Boolean canRun`（字段加 `is` 前缀） | 字段不加 `is` 前缀：`boolean deleted`；方法用 `isXxx()`/`hasXxx()`：`isDeleted()` | 01-(一)命名风格 |
+| **常量定义** | 魔法数字 `if (status == 3)` | `private static final int STATUS_PAID = 3;` 具名常量 | 01-(二)常量定义 |
+| **循环拼接字符串** | `String s = ""; for(...) s += x;` | `StringBuilder.append(...)` | 01-(六)集合处理 |
+
+**应用原则**：
+1. **生成代码时默认套用**：命中上表场景时，直接写出正例写法，无需询问用户。
+2. **review 代码时显式引用**：发现反例时，指出违反的章节编号 + 级别（如「违反 01-(九)【强制】」），并给出正例。
+3. **禁止弱化**：即使用户说「简单写一下」，上述【强制】行仍需遵守——可省略注释，但 API 选择不能退化。
+
 ## 使用方式
 
 1. **识别任务主题**：根据用户问题（写 Java 代码、review、设计表、写 SQL、异常处理、测试等）匹配上表场景关键词。

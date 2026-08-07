@@ -1,0 +1,27 @@
+id: date-time-api
+title: 日期时间应使用 java.time 而非 Date/SimpleDateFormat
+description: |
+  阿里规约：强制使用 java.time 下的 LocalDateTime/LocalDate，
+  避免 Date、SimpleDateFormat（非线程安全）。
+input:
+  prompt: |
+    用 Java 写一个工具类 DateUtils，提供方法：
+    - 获取当前时间的字符串（格式 yyyy-MM-dd HH:mm:ss）
+    - 计算两个日期相差天数
+    - 把字符串解析成日期对象
+
+    给我完整代码。
+expect:
+  must_contain:
+    - "DateUtils"
+judge:
+  type: rule_based
+  success:
+    - output_contains:
+        any: ["LocalDateTime", "LocalDate", "Instant", "ZonedDateTime"]
+    - output_contains:
+        any: ["DateTimeFormatter", "DateTimeFormatter.ofPattern"]
+    - output_contains:
+        not: ["new SimpleDateFormat", "SimpleDateFormat sdf", "SimpleDateFormat format"]
+    - output_contains:
+        not: ["new Date()", "import java.util.Date;"]

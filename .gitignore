@@ -1,0 +1,15 @@
+# 浏览器调试缓存（skill-up 官网抓取产物）
+.playwright-mcp/
+.playwright/
+
+# 评测报告（含完整内部数据，不随仓库分发）
+EVALUATION_REPORT.md
+
+# 评测工作区产物（skill-up run 生成的迭代结果）
+*-workspace/
+
+# 系统/编辑器
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

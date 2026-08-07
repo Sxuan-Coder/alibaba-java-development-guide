@@ -1,0 +1,25 @@
+id: project-layering
+title: Web 项目应正确分层，区分 DTO/VO，DAO 不直接暴露给前端
+description: |
+  阿里规约：应用分层 Web/Service/Manager/DAO，跨层交互用 DTO/VO 而非直接返回 DO。
+input:
+  prompt: |
+    设计一个用户管理的 REST 模块，包含：
+    - 用户查询接口 GET /users/{id}
+    - 用户创建接口 POST /users
+
+    给我完整代码（Controller、Service、相关 DTO/VO、DAO/Mapper）。
+    重点关注分层和数据对象设计。
+expect:
+  must_contain:
+    - "Controller"
+judge:
+  type: rule_based
+  success:
+    - output_contains:
+        all: ["Controller", "Service"]
+    - output_contains:
+        any: ["DTO", "VO", "UserRequest", "UserResponse", "UserResp",
+              "CreateUserRequest", "UserDTO", "UserVO"]
+    - output_contains:
+        any: ["@Service", "interface UserService", "class UserService", "UserService"]

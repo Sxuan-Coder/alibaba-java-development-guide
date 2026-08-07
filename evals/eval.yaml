@@ -1,0 +1,33 @@
+# skill-up 评测入口 — 阿里巴巴 Java 开发手册 Skill
+# 启用 benchmark 模式：每个用例跑 with_skill / without_skill 两次对比
+schema_version: v1alpha1
+
+environment:
+  type: none  # 纯 Java 代码生成，不需要容器隔离
+
+engine:
+  name: claude_code
+  # model 留空：使用 Claude Code 当前已认证的默认模型
+
+cases:
+  files:
+    - evals/cases/naming-style.yaml
+    - evals/cases/null-safety-service.yaml
+    - evals/cases/sql-injection.yaml
+    - evals/cases/date-time-api.yaml
+    - evals/cases/project-layering.yaml
+    - evals/cases/collection-concurrency.yaml
+    - evals/cases/review-bad-code.yaml
+    - evals/cases/review-money-calc.yaml
+  defaults:
+    timeout_seconds: 420
+    max_turns: 10
+    expect:
+      exit_code: 0
+
+# 关键：开启基线对比，自动跑 with_skill 和 without_skill
+benchmark:
+  enabled: true
+
+report:
+  formats: [json, html]

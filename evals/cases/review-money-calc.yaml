@@ -1,0 +1,26 @@
+id: review-money-calc
+title: 金额计算应使用 BigDecimal 而非 double
+description: |
+  阿里【强制】金额计算必须用 BigDecimal（或 Long 分），禁止用 double/float。
+  验证 Skill 是否能识别金额场景并给出正确建议。
+input:
+  prompt: |
+    我要写一个订单金额计算的 Service，涉及单价、数量、折扣、总价的计算和存储。
+    直接给我完整 Java 代码，包括字段定义和计算逻辑。
+expect:
+  must_contain:
+    - "BigDecimal"
+judge:
+  type: rule_based
+  success:
+    # 必须 import 或使用 BigDecimal
+    - output_contains:
+        all: ["BigDecimal"]
+    # 禁止用 double/float 做金额字段
+    - output_contains:
+        not: ["double price", "double amount", "double total",
+              "float price", "float amount", "double money", "double discount"]
+    # 必须用 String 构造器 或 valueOf（避免 double 精度问题）
+    - output_contains:
+        any: ["new BigDecimal(\"", 'new BigDecimal("', "BigDecimal.valueOf",
+              "setScale", "RoundingMode"]

@@ -1,0 +1,30 @@
+id: collection-concurrency
+title: 集合判空用 isEmpty，并发场景用线程安全集合
+description: |
+  阿里规约：
+  - 集合判空用 isEmpty() 而非 size()==0
+  - 多线程场景使用 ConcurrentHashMap / CopyOnWriteArrayList 而非 HashMap/ArrayList
+input:
+  prompt: |
+    用 Java 写一个「用户在线状态管理器」OnlineUserManager：
+    - 多线程环境下维护在线用户列表
+    - 方法：addUser(String userId), removeUser(String userId), getOnlineCount(), isEmpty()
+    - 我会有多个线程同时调用
+
+    给我完整代码。
+expect:
+  must_contain:
+    - "OnlineUserManager"
+judge:
+  type: rule_based
+  success:
+    - output_contains:
+        any: ["ConcurrentHashMap", "ConcurrentLinkedQueue", "CopyOnWriteArrayList",
+              "Collections.synchronizedMap", "Collections.synchronizedList",
+              "new ConcurrentHashMap"]
+    - output_contains:
+        any: [".isEmpty()", "isEmpty()", "CollectionUtils.isEmpty", "Objects.isNull"]
+    - output_contains:
+        not: ["new HashMap<>()", "new ArrayList<>()", "new HashMap<String",
+              "private Map<String, ?> onlineUsers = new HashMap",
+              "private List<String> onlineUsers = new ArrayList"]

@@ -1,0 +1,31 @@
+id: naming-style
+title: Java 命名规约应遵循阿里规约（LowerCamelCase/常量/包名）
+description: |
+  验证 AI 在生成 Java 代码时是否遵循阿里巴巴命名规约：
+  - 布尔变量不用 flag，使用 isXxx / hasXxx
+  - 常量全大写下划线分隔 MAX_RETRY_COUNT
+  - 类名 UpperCamelCase、方法名 lowerCamelCase
+input:
+  prompt: |
+    用 Java 写一个「用户重试服务」类 UserService，放在 com.app.user 包下。
+    要求：
+    - 有个最大重试次数常量，值为 3
+    - 有个布尔成员表示用户是否激活
+    - 有个方法执行重试逻辑
+    - 有个方法返回用户信息字符串
+    一次写完整，给我完整代码。
+expect:
+  must_contain:
+    - "class"
+    - "UserService"
+judge:
+  type: rule_based
+  success:
+    - output_contains:
+        all: ["class UserService"]
+    - output_contains:
+        any: ["MAX_RETRY", "MAX_RETRY_COUNT", "maxRetry", "MAX_COUNT", "MAX_RETRIES"]
+    - output_contains:
+        any: ["isActive", "active", "isActivated", "enabled", "isEnabled", "hasAccess"]
+    - output_contains:
+        not: ["boolean flag", "Boolean flag", "int flag", "String Flag"]

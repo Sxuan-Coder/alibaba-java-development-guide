@@ -1,0 +1,19 @@
+id: sql-injection
+title: 数据库查询应使用参数化，避免 SQL 注入
+description: |
+  阿里手册强制：SQL.xml 中禁止 ${} 拼接，必须用 #{} 或 PreparedStatement 参数化。
+  模糊查询必须用 CONCAT 或占位符，禁止字符串拼接。
+  升级为 script judge 做 4 维度语义评分（≥70 通过）。
+input:
+  prompt: |
+    用 Java + JDBC 或 MyBatis 写一个根据用户名模糊查询用户的方法：
+    List<User> findUsersByName(String name)
+
+    给我完整代码（DAO 或 Mapper）。
+expect:
+  must_contain:
+    - "findUsersByName"
+judge:
+  type: script
+  script_path: evals/fixtures/scripts/score-sql-injection.ps1
+  timeout_seconds: 30

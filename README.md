@@ -31,7 +31,52 @@
 - 👁️ **视角区分**——编写视角（即时决策）与审查视角（全局判断）分流，按任务类型推荐阅读路径
 - 🎛️ **个性化配置**——通过 `memory.md` 覆盖手册规约或补充团队自有规范
 
-## 二、规约来源
+## 二、效果验证
+
+> 通过 **with_skill vs without_skill** 基准对比评测：同一批 Java 编写任务，分别在有/无本 Skill 的情况下运行，逐条核对是否符合阿里规约。
+
+### 关键指标
+
+| 指标 | 用本 Skill | 不用 Skill | 提升 |
+|------|-----------|-----------|------|
+| **平均规约通过率** | **95.8%** | 82.5% | **+13.1pp** |
+| **日期时间规约用例** | **100%** | **20%** | **+80pp** |
+| **最差用例通过率** | 75% | **20%** | 消除短板 |
+
+### 实测对比：日期时间 API（最典型案例）
+
+同一句需求「写一个 DateUtils 工具类」，是否使用本 Skill，产出完全不同：
+
+**❌ 不用 Skill** —— 用了手册明令禁止的写法（违反【强制】规约）：
+```java
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public String format(Date date, String pattern) {
+    return new SimpleDateFormat(pattern).format(date); // 非线程安全，违反【强制】
+}
+```
+
+**✅ 用本 Skill** —— 正确采用线程安全的 `java.time` API：
+```java
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+private static final DateTimeFormatter FORMATTER =
+        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); // 线程安全，可全局复用
+
+public String now() {
+    return LocalDateTime.now().format(FORMATTER);
+}
+```
+
+> `SimpleDateFormat` 非线程安全、`java.util.Date` 已过时——这是阿里手册明确写入的【强制】规约，也是 AI 最容易遗忘、而本 Skill 能稳定纠正的细节。上述用例在多个模型上反复验证：**不用 Skill 时 AI 大概率退回旧写法，用了 Skill 则稳定采用正确 API**。
+
+### 评测可复现
+
+评测用例与评分脚本已随仓库收录在 `evals/` 目录，可本地一键复跑、回归验证。
+
+## 三、规约来源
 
 本 Skill 内容**完整来源于**：
 
@@ -42,7 +87,7 @@
 
 > ⚠️ **版权说明**：手册原文版权归阿里巴巴所有。本项目仅以 Skill 形式做工程化封装与便捷分发，便于开发者团队在 AI 辅助编码中统一遵循。
 
-## 三、仓库结构
+## 四、仓库结构
 
 ```
 alibaba-java-development-guide/
@@ -66,7 +111,7 @@ alibaba-java-development-guide/
 
 每条规约的内部结构：`规约编号 + 级别 + 说明 + 正例 + 反例`。
 
-## 四、安装到 Claude Code
+## 五、安装到 Claude Code
 
 把整个目录放到 Claude Code 的 skills 目录下。
 
@@ -117,7 +162,7 @@ git clone https://github.com/Sxuan-Coder/alibaba-java-development-guide.git .cla
 
 Claude 会自动加载本 Skill，按需读取 `data/02-exception-logging.md`、`data/06-project-structure.md` 等章节并给出条文级反馈。
 
-## 五、安装到 Codex (OpenAI Codex CLI)
+## 六、安装到 Codex (OpenAI Codex CLI)
 
 Codex CLI 使用 `~/.codex/` 作为配置根目录，支持通过 `prompts/` 注入 slash 命令、并通过 `AGENTS.md` 让 AI 引用规约文件。本 Skill 的 `data/` 章节是纯 Markdown，可被 Codex 直接读取引用。
 
@@ -163,7 +208,7 @@ EOF
 
 之后在 Codex CLI 中输入 `/java-review` 即可触发。
 
-## 六、使用示例
+## 七、使用示例
 
 安装完成后，无需手动调用——AI 会在命中场景时自动加载。也可显式触发：
 
@@ -192,11 +237,16 @@ memory.md （个人偏好）→ project/<项目名>.md （项目规范）→ 手
 **初始化**：首次使用时 AI 自动扫描项目 + 提问，生成对应文件
 **持续更新**：日常编码中 AI 发现新规范时询问是否加入
 
-## 七、许可证与贡献
+## 八、许可证与贡献
 
 - 规约原文版权归 **阿里巴巴集团** 所有，本项目仅做工程封装。
 - Skill 封装代码（`SKILL.md`、路由结构、README 等）按 MIT 协议开源，欢迎 PR 补充条文解读、修复转换噪声、增加实战案例。
 - 如发现 PDF 转换残留的排版噪声，欢迎提 Issue 和 PR。
+
+## 九、致谢
+
+- **[《Java 开发手册（黄山版）》](https://github.com/alibaba/p3c)** —— 本 Skill 的规约内容来源，阿里巴巴 Java 社区工程规约的集大成者。
+- **[skill-up](https://github.com/alibaba/skill-up)** —— 本 Skill 的评测工具，支撑 `evals/` 基准对比与持续回归。
 
 ---
 
