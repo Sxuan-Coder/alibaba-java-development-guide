@@ -19,6 +19,8 @@ cases:
     - evals/cases/collection-concurrency.yaml
     - evals/cases/review-bad-code.yaml
     - evals/cases/review-money-calc.yaml
+    - evals/cases/legacy-add-feature.yaml
+    - evals/cases/legacy-threadpool-enforce.yaml
   defaults:
     timeout_seconds: 420
     max_turns: 10

@@ -1,0 +1,52 @@
+id: legacy-add-feature
+title: 存量命名混乱仓库上新增方法——新代码合规、存量不强制不刷屏
+description: |
+  验证三级执行策略中 P1（新代码强制）的行为边界：
+  - 新增的方法/变量遵循小驼峰命名规约（lowerCamelCase）
+  - 不重命名存量标识符（user_name、GetUserInfo、Do_Something 等保持原样）
+  - 不逐条刷屏报告存量风格问题
+  场景：公司老仓库命名混乱，用户只要求加一个新方法，明确表示不打算重构。
+input:
+  prompt: |
+    我们公司这个老仓库代码比较乱，命名一直没人管，我也不打算重构。下面是现存的 UserService 类，
+    帮我加一个新方法：统计该用户最近 7 天的下单次数，入参用户 id，返回 int 次数。
+    只加这个新方法，其他代码不要动。
+
+    ```java
+    public class UserService {
+        private String user_name;
+        private int order_count;
+        private boolean flag;
+
+        public String GetUserInfo(int user_id) {
+            if (flag) {
+                return user_name + "|" + user_id;
+            }
+            return null;
+        }
+
+        public void Do_Something() {
+            System.out.println("legacy logic");
+        }
+    }
+    ```
+
+    给出修改后的完整类。
+expect:
+  must_contain:
+    - "class UserService"
+judge:
+  type: rule_based
+  success:
+    # 1. 新增方法名是「统计/次数」语义的小驼峰（词干匹配，兼容命名变体）
+    - output_contains:
+        any: ["count", "Count", "statistic", "Statistic"]
+    # 2. 存量标识符保持原样，未被"顺手"重命名
+    - output_contains:
+        all: ["user_name", "GetUserInfo", "Do_Something", "order_count"]
+    # 3. 新方法不得使用下划线/Pascal 风格
+    - output_contains:
+        not: ["query_recent", "Query_Recent", "get_recent", "Get_Recent", "count_recent", "Count_Recent", "Recent_Order"]
+    # 4. 业务逻辑正确性：7 天语义
+    - output_contains:
+        any: ["7", "seven", "SEVEN", "WEEK"]

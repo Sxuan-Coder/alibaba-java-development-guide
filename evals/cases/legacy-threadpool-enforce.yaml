@@ -1,0 +1,41 @@
+id: legacy-threadpool-enforce
+title: 存量代码含 Executors 工厂线程池——P0 红线必须强制修复为 ThreadPoolExecutor
+description: |
+  验证三级执行策略中 P0（红线）的强制行为：
+  - 用户表达「按阿里规约」意图时，被触碰类中的隐患型问题（Executors 创建线程池）必须指出并修复
+  - 即使线程池不是本次改动点，也必须替换为 ThreadPoolExecutor 显式参数写法
+  场景：用户只要求加一个小参数、不打算大改，但点明要对照阿里规约。
+input:
+  prompt: |
+    帮我在下面这个存量类里加一个小功能：给 sendMessage 方法加一个参数 tag（消息标签），
+    在发送时打印出来。其他代码没问题的话就不用动，帮我对照阿里规约看看。
+
+    ```java
+    @Service
+    public class MessageService {
+        private final ExecutorService executor = Executors.newFixedThreadPool(10);
+
+        public void sendMessage(String phone, String content) {
+            executor.submit(() -> {
+                System.out.println("sending to " + phone);
+            });
+        }
+    }
+    ```
+
+    给出修改后的完整类。
+expect:
+  must_contain:
+    - "class MessageService"
+judge:
+  type: rule_based
+  success:
+    # 1. 新功能已实现：tag 参数存在
+    - output_contains:
+        any: ["tag", "Tag"]
+    # 2. P0 强制：线程池必须替换为 ThreadPoolExecutor 显式构造
+    - output_contains:
+        all: ["new ThreadPoolExecutor", "TimeUnit"]
+    # 3. 构造参数中给出了显式阻塞队列
+    - output_contains:
+        any: ["LinkedBlockingQueue", "ArrayBlockingQueue", "SynchronousQueue"]

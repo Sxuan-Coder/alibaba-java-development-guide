@@ -13,3 +13,6 @@ EVALUATION_REPORT.md
 Thumbs.db
 .idea/
 .vscode/
+
+# 本地会话目录
+.zcode/

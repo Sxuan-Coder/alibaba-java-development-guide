@@ -5,7 +5,7 @@
 `码出高效，码出质量。`
 
 ---
-![version](https://img.shields.io/badge/version-1.1.1-blue) ![license](https://img.shields.io/badge/license-MIT-green) ![Alibaba](https://img.shields.io/badge/Alibaba-黄山版-orange)
+![version](https://img.shields.io/badge/version-1.2.0-blue) ![license](https://img.shields.io/badge/license-MIT-green) ![Alibaba](https://img.shields.io/badge/Alibaba-黄山版-orange)
 
 [🚀 一键安装](#五安装)
 ---
@@ -24,14 +24,15 @@
 
 **本 Skill 的优势**：
 
+- 🚦 **三级执行策略**——🔴 P0 红线（线程池/并发安全/安全漏洞/资源事务/破坏性SQL/NPE 防护）无条件强制，被改到的存量代码发现即修复、不可口头豁免；🟡 P1 风格类强制（小驼峰命名等）只约束**新写的代码**，存量不扫描不刷屏；🟢 P2 建议级用户说忽略即忽略。老仓库"代码是一坨"也不怕，只要求新代码合规
 - 📚 **完整收录**黄山版 7 大维度（编程规约 / 异常日志 / 单元测试 / 安全规约 / MySQL / 工程结构 / 设计规约）共 2000+ 行条文
 - 🧭 **按需路由，省Token**——`SKILL.md` 只做导航，命中场景时才读取对应 `data/*.md`，节省 token
 - 🎯 **触发词精准定位**——18 条精确关键词映射，AI 无需推理即可直达对应章节
 - 🏷️ **保留分级**——每条规约标注【强制】/【推荐】/【参考】，AI 能区分优先级
 - ✅ **正例 + 反例**——条文附带提倡写法与真实故障雷区，AI 修复时有的放矢
-- ⚖️ **冲突解决策略**——安全优先 > 强制优先 > 业务豁免 > 渐进改进，规约冲突时有据可依
+- ⚖️ **冲突解决策略**——安全优先 > 强制优先 > 业务豁免 > 渐进改进（P0 红线除外），规约冲突时有据可依
 - 👁️ **视角区分**——编写视角（即时决策）与审查视角（全局判断）分流，按任务类型推荐阅读路径
-- 🎛️ **个性化配置**——通过 `memory.md` 覆盖手册规约或补充团队自有规范
+- 🎛️ **个性化配置**——通过 `memory.md` 覆盖手册规约或补充团队自有规范；`project/<项目名>.md` 可配置存量卫生度与 P1 存量输出模式
 
 ## 二、效果验证
 
@@ -164,6 +165,7 @@ Claude 会自动加载本 Skill，按需读取 `data/02-exception-logging.md`、
 | "帮我写这个方法的单测" | `03-unit-testing.md`（AIR、BCDE、Mock） |
 | "金额字段要不要用 BigDecimal" | 触发 `memory.md` + `01-coding-standards.md`（优先读团队偏好覆盖） |
 | "这个 JWT Token 设计安全吗" | 触发词 `JWT/Token` → `04-security-standards.md` |
+| "老仓库代码很乱，帮我加个方法（其他别动）" | 三级执行策略：新方法按规约命名（P1），不重命名存量标识符、不刷屏（P1 只管新代码），但被改方法里若有 `Executors.newFixedThreadPool` 等红线问题会强制修复（P0） |
 | "方法超 80 行了但单一职责拆不动" | 触发 `SKILL.md` 冲突策略 → 安全豁免 + 加注释说明 |
 
 ### 个性化配置
